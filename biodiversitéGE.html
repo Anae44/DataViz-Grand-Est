@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Biodiversité dans le Grand-Est</title>
+<style>
+  /* 🌿 Thème général */
+  body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(180deg, #eaf7ef 0%, #f9fff9 100%);
+    color: #2e4032;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2 {
+    text-align: center;
+    font-weight: 600;
+    color: #2e5a3d;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+  }
+
+  h1 {
+    margin-top: 30px;
+    font-size: 2em;
+  }
+
+  h2 {
+    margin-top: 20px;
+    font-size: 1.4em;
+  }
+
+  p {
+    text-align: center;
+    color: #3a4a3f;
+    margin: 5px auto 15px auto;
+    max-width: 800px;
+  }
+
+  /* 🌼 Conteneur principal */
+  #container {
+    display: flex;
+    justify-content: center;
+    margin: 20px auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    max-width: 1000px;
+  }
+
+  svg {
+    border-radius: 12px;
+  }
+
+  /* 🪶 Contrôles */
+  #controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+    background: #e8f5ea;
+    border-radius: 10px;
+    padding: 10px 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  label {
+    font-weight: 600;
+    color: #2e5a3d;
+  }
+
+  select, input[type="range"], button {
+    font-size: 14px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #a5c9a8;
+    background: #ffffff;
+    color: #2e4032;
+    transition: 0.3s;
+  }
+
+  select:hover, input[type="range"]:hover {
+    background: #f5fff5;
+  }
+
+  button {
+    background: linear-gradient(135deg, #5a9e6b 0%, #3f7b4e 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  button:hover {
+    background: linear-gradient(135deg, #6fb97f 0%, #4e8c5c 100%);
+  }
+
+  #dateLabel {
+    font-weight: bold;
+    color: #245b36;
+    background: #d7f2df;
+    padding: 4px 10px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  /* 🗺️ Carte */
+  #mapContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+
+  svg {
+    background: #f1f9f2;
+    border: 1px solid #bcd8be;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  }
+
+  path {
+    fill: #d8ead9;
+    stroke: #5f7c63;
+    stroke-width: 0.7;
+    transition: fill 0.3s;
+  }
+
+  path:hover {
+    fill: #b8d9bb;
+  }
+
+  /* 🦋 Tooltip biodiversité */
+  .tooltip {
+    position: absolute;
+    background: rgba(255,255,255,0.98);
+    border: 1px solid #b4d6b8;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    pointer-events: none;
+    opacity: 0;
+    font-size: 13px;
+    color: #2e4032;
+  }
+
+  .tooltip img {
+    border-radius: 6px;
+    margin-top: 5px;
+  }
+
+</style>
+<script type="module" src="https://cdn.jsdelivr.net/npm/d3@7/+esm"></script>
+  <script type="module">
+    import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+const data = {
+  "name": "biodiversité",
+  "children": [
+    {
+      "name": "papillons",
+      "children": [
+        {
+          "name": "Nymphalidae",
+          "children": [
+            {
+              "name": "Aglais",
+              "children": [
+                { "name": "Aglais urticae", "value": 2479, "image": "images/aglais_urticae.jpg", "description":"La Petite tortue ou Vanesse de l'ortie, Aglais urticae, est une espèce de lépidoptères de la famille des Nymphalidae. Elle est largement répandue en Europe, et sa chenille se nourrit d'orties. " },
+                { "name": "Aglais io", "value": 2585, "image": "images/aglais_io.jpg", "description":"Le Paon-du-jour, Aglais io, est une espèce de lépidoptères. Contrairement à bon nombre de lépidoptères, il ne présente pas de variations géographiques ou saisonnières, d'où une remarquable stabilité morphologique sur l'ensemble de son aire." }
+              ]
+            },
+            {
+              "name": "Vanessa",
+              "children": [
+                { "name": "Vanessa atalanta", "value": 3003, "image":"images/vanessa_atalanta.jpg", "description":"Le Vulcain, Vanessa atalanta, est une espèce de lépidoptères de la famille des Nymphalidae et de la sous-famille des Nymphalinae." },
+                { "name": "Vanessa cardui", "value": 1408, "image":"images/vanessa_cardui.jpg", "description":"La Belle-Dame ou Vanesse des chardons, Vanessa cardui, est une espèce de lépidoptères de la famille des Nymphalidae. Papillon migrateur, il possède une aire de répartition quasi-cosmopolite, c'est l'espèce diurne la plus répandue dans le monde." }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Pieridae",
+          "children": [
+            {
+              "name": "Gonepteryx",
+              "children": [
+                { "name": "Gonepteryx rhamni", "value": 3389, "image":"images/gonepteryx_rhamni.jpg" , "description":"Le Citron, Gonepteryx rhamni, est une espèce de lépidoptères de la famille des Pieridae, répandue en Eurasie." }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "oiseaux",
+      "children": [
+        {
+          "name": "Accipitridae",
+          "children": [
+            {
+              "name": "Accipiter",
+              "children": [
+                { "name": "Accipiter nisus", "value": 2811, "image":"images/accipiter_nisus.jpg", "description":"L'épervier d'Europe, Accipiter nisus" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Aegithalidae",
+          "children": [
+            {
+              "name": "Aegithalos",
+              "children": [
+                { "name": "Aegithalos caudatus", "value": 2471, "image": "images/aegithalos_caudatus.jpg", "description":"Mésange à longue queue, Aegithalos caudatus" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Apodidae",
+          "children": [
+            {
+              "name": "Apus",
+              "children": [
+                { "name": "Apus apus", "value": 1813, "image":"images/apus_apus.jpg", "description":"Le martinet noir, Apus apus, présent uniquement en période estivale" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Fringillidae",
+          "children": [
+            { "name": "Carduelis", "children": [ { "name": "Carduelis carduelis", "value": 16589, "image":"images/carduelis_carduelis.jpg", "description":"Le chardonnet élégant, Carduelis carduelis"  } ] },
+            { "name": "Chloris", "children": [ { "name": "Chloris chloris", "value": 23784, "image":"images/chloris_chloris.jpg", "description":"Le verdier d'Europe, Chloris chloris"} ] },
+            { "name": "Coccothraustes", "children": [ { "name": "Coccothraustes coccothraustes", "value": 5729, "image": "images/coccothraustes_coccothraustes.jpg", "description":"Le grosbec casse-noyau, Coccothraustes coccothraustes" } ] },
+            { "name": "Fringilla", "children": [
+              { "name": "Fringilla coelebs", "value": 33770, "image":"images/fringilla_coelebs.jpg", "description":"Le pinson des arbres, Fringilla coelebs" },
+              { "name": "Fringilla montifringila", "value": 5487, "image":"images/fringilla_montifringilla.jpg", "description":"Le pinson du nord ou pinson des Ardennes, Fringilla montifringila, présent uniquement en période hivernale" }
+            ] },
+            { "name": "Linaria", "children": [ { "name": "Linaria cannabina", "value": 2196, "image":"images/linaria_cannabina.jpg", "description":"La linotte mélodieuse, Linaria cannabina" } ] },
+            { "name": "Pyrrhula", "children": [ { "name": "Pyrrhula pyrrhula", "value": 4717, "image": "images/pyrrhula_pyrrhula.jpg", "description":"Le bouvreuil pivoine, Pyrrhula pyrrhula" } ] },
+            { "name": "Serinus", "children": [ { "name": "Serinus serinus", "value": 2529, "image":"images/serinus_serinus.jpg", "description":"Le serin cini, Serinus serinus" } ] },
+            { "name": "Spinus", "children": [ { "name": "Spinus spinus", "value": 3981, "image":"images/spinus_spinus.jpg", "description":"Le tarin des aulnes, Spinus spinus" } ] }
+          ]
+        },
+        {
+          "name": "Certhidae",
+          "children": [
+            { "name": "Certhia", "children": [ { "name": "Certhia brachydactyla", "value": 2084, "image": "images/certhia_brachydactyla.jpg", "description":"Le grimpereau des jardins,Certhia brachydactyla" } ] }
+          ]
+        },
+        {
+          "name": "Corvidae",
+          "children": [
+            { "name": "Corvus", "children": [
+              { "name": "Corvus monedula", "value": 3206, "image":"images/corvus_monedula.jpg", "description":"Le choucas des tours, Corvus monedula"},
+              { "name": "Corvus corone", "value": 14337, "image":"images/corvus_corone.jpg", "description":"La corneille noire, Corvus corone" }
+            ] },
+            { "name": "Garrulus", "children": [ { "name": "Garrulus glandarius", "value": 9574, "image":"images/garrulus_glandarius.jpg", "description":"Le geai des chênes, Garrulus glandarius" } ] },
+            { "name": "Pica", "children": [ { "name": "Pica pica", "value": 28277, "image":"images/pica_pica.jpg", "description":"La pie bavarde, Pica pica" } ] }
+          ]
+        },
+        {
+          "name": "Paridae",
+          "children": [
+            { "name": "Cyanistes", "children": [ { "name": "Cyanistes caeruleus", "value": 46647, "image": "images/cyanistes_caeruleus.jpg", "description":"La mésange bleue, Cyanistes caeruleus" } ] },
+            { "name": "Lophophanes", "children": [ { "name": "Lophophanes cristatus", "value": 1599, "image":"images/lophophanes_cristatus.jpg", "description":"La mésange huppée, Lophophanes cristatus" } ] },
+            { "name": "Parus", "children": [ { "name": "Parus major", "value": 53705, "image": "images/parus_major.jpg", "description":"La mésange charbonnière, Parus major" } ] },
+            { "name": "Periparus", "children": [ { "name": "Periparus ater", "value": 2503, "image": "images/periparus_ater.jpg", "description":"La mésange noire, Periparus ater" } ] },
+            { "name": "Poecile", "children": [ { "name": "Poecile palustris", "value": 9235, "image": "images/poecile_palustris.jpg", "description":"La mésange nonnette, Poecile palustris" } ] }
+          ]
+        },
+        {
+          "name": "Hirundinidae",
+          "children": [
+            { "name": "Delichon", "children": [ { "name": "Delichon urbicum", "value": 2591, "image":"images/delichon_urbicum.jpg", "description":"L'hirondelle de fenêtre, Delichon urbicum, présent uniquement en période estivale" } ] },
+            { "name": "Hirundo", "children": [ { "name": "Hirundo rustica", "value": 5228, "image":"images/hirundo_rustica.jpg", "description":"L'hirondelle rustique ou hirondelle de cheminée, Hirundo rustica, présent uniquement en période estivale" } ] }
+          ]
+        },
+        {
+          "name": "Emberizidae",
+          "children": [
+            { "name": "Emberiza", "children": [
+              { "name": "Emberiza cirlus", "value": 517, "image":"images/emberiza_cirlus.jpg", "description":"Le bruant zizi, Emberiza cirlus" },
+              { "name": "Emberiza citrinella", "value": 957, "image":"images/emberiza_citrinella.jpg", "description":"Le bruant jaune, Emberiza citrinella" }
+            ] }
+          ]
+        },
+        {
+          "name": "Muscicapidae",
+          "children": [
+            { "name": "Erithacus", "children": [ { "name": "Erithacus rubecula", "value": 30282, "image":"images/erithacus_rubecula.jpg", "description":"Le rougegorge familier, Erithacus rubecula" } ] },
+            { "name": "Muscicapa", "children": [ { "name": "Muscicapa striata", "value": 289, "image":"images/muscicapa_striata.jpg", "description":"Le gobemouche gris, Muscicapa striata, présent uniquement en période estivale" } ] },
+            { "name": "Phoenicurus", "children": [
+              { "name": "Phoenicurus ochruros", "value": 13695, "image":"images/phoenicurus_ochruros.jpg", "description":"Le rougequeue noir, Phoenicurus ochruros" },
+              { "name": "Phoenicurus phoenicurus", "value": 2451, "image":"images/phoenicurus_phoenicurus.jpg", "description":"Le rougequeue à front blanc, Phoenicurus phoenicurus, présent uniquement en période estivale" }
+            ] }
+          ]
+        },
+        {
+          "name": "Motacillidae",
+          "children": [
+            { "name": "Motacilla", "children": [ { "name": "Motacilla alba", "value": 3818, "image":"images/motacilla_alba.jpg", "description":"La bergeronnette grise, Motacilla alba"  } ] }
+          ]
+        },
+        {
+          "name": "Passeridae",
+          "children": [
+            { "name": "Passer", "children": [
+              { "name": "Passer domesticus", "value": 52567, "image": "images/passer_domesticus.jpg", "description":"Le moineau domestique, Passer domesticus" },
+              { "name": "Passer montanus", "value": 4425, "image":"images/passer_montanus.jpg", "description":"Le moineau friquet, Passer montanus" }
+            ] }
+          ]
+        },
+        {
+          "name": "Phylloscopidae",
+          "children": [
+            { "name": "Phylloscopus", "children": [ { "name": "Phylloscopus collybita", "value": 2817, "image":"images/phylloscopus_collybita.jpg", "description":"Le pouillot véloce, Phylloscopus collybita" } ] }
+          ]
+        },
+        {
+          "name": "Picidae",
+          "children": [
+            { "name": "Picus", "children": [ { "name": "Picus viridis", "value": 4928, "image":"images/picus_viridis.jpg", "description":"Le pic vert ou pivert, Picus viridis" } ] },
+            { "name": "Dendrocopos", "children": [
+              { "name": "Dendrocopos major", "value": 11890, "image":"images/dendrocopos_major.jpg", "description":"Le pic épeiche, Dendrocopos major" },
+              { "name": "Dendrocopos minor", "value": 407, "image":"images/dendrocopos_minor.jpg", "description":"Le pic épeichette, Dendrocopos minor" }
+            ] }
+          ]
+        },
+        {
+          "name": "Prunellidae",
+          "children": [
+            { "name": "Prunella", "children": [ { "name": "Prunella modularis", "value": 7710, "image":"images/prunella_modularis.jpg", "description":"L'accenteur mouchet, Prunella modularis" } ] }
+          ]
+        },
+        {
+          "name": "Regulidae",
+          "children": [
+            { "name": "Regulus", "children": [ { "name": "Regulus regulus", "value": 631, "image":"images/regulus_regulus.jpg", "description":"Le roitelet huppé, Regulus regulus" } ] }
+          ]
+        },
+        {
+          "name": "Sittidae",
+          "children": [
+            { "name": "Sitta", "children": [ { "name": "Sitta europaea", "value": 10110, "image":"images/sitta_europaea.jpg", "description":"La sitelle torchepot, Sitta europaea" } ] }
+          ]
+        },
+        {
+          "name": "Sylviidae",
+          "children": [
+            { "name": "Sylvia", "children": [ { "name": "Sylvia atricapilla", "value": 5993, "image":"images/sylvia_atricapilla.jpg", "description":"La fauvette à tête noire, Sylvia atricapilla" } ] }
+          ]
+        },
+        {
+          "name": "Troglodytidae",
+          "children": [
+            { "name": "Troglodytes", "children": [ { "name": "Troglodytes troglodytes", "value": 6271, "image": "images/troglodytes_troglodytes.jpg", "description":"Le troglodyte mignon, Troglodytes troglodyte" } ] }
+          ]
+        },
+        {
+          "name": "Upupidae",
+          "children": [
+            { "name": "Upupa", "children": [ { "name": "Upupa epops", "value": 43, "image":"images/upupa_epops.jpg", "description":"La huppe fasciée, Upupa epops" } ] }
+          ]
+        },
+        {
+          "name": "Columbidae",
+          "children": [
+            { "name": "Columba", "children": [
+              { "name": "Columba livia", "value": 5131, "image":"images/columba_livia.jpg", "description":"Le pigeon biset, Columba livia" },
+              { "name": "Columba palumbus", "value": 13835, "image":"images/columba_palumbus.jpg", "description":"Le pigeon ramier, Columba palumbus" }
+            ] },
+            { "name": "Streptopelia", "children": [
+              { "name": "Streptopelia decaocto", "value": 29059, "image":"images/streptopelia_decaocto.jpg", "description":"La tourterelle turque, Streptopelia decaocto" }
+            ] }
+          ]
+        },
+        {
+          "name": "Psittaculidae",
+          "children": [
+            { "name": "Psittacula", "children": [ { "name": "Psittacula krameri", "value": 372 , "image": "images/psittacula_krameri.jpg", "description":"La perruche à collier, Psittacula krameri" } ] }
+          ]
+        },
+        {
+          "name": "Sturnidae",
+          "children": [
+            { "name": "Sturnus", "children": [ { "name": "Sturnus vulgaris", "value": 12657, "image":"images/sturnus_vulgaris.jpg", "description":"L'étourneau sansonnet, Sturnus vulgaris" } ] }
+          ]
+        },
+        {
+          "name": "Turdidae",
+          "children": [
+            { "name": "Turdus", "children": [
+              { "name": "Turdus iliacus", "value": 209, "image":"images/turdus_iliacus.jpg", "description":"La grive mauvis, Turdus iliacus, présent uniquemet en période hivernale" },
+              { "name": "Turdus merula", "value": 43340, "image":"images/turdus_merula.jpg", "description":"Le merle noir, Turdus merula" },
+              { "name": "Turdus philomelos", "value": 1917, "image":"images/turdus_philomelos.jpg", "description":"La grive musicienne, Turdus philomelos" },
+              { "name": "Turdus viscivorus", "value": 996, "image":"images/turdus_viscivorus.jpg", "description":"La grive draine, Turdus viscivorus" }
+            ] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "plantes",
+      "children": [
+        {
+          "name": "Alismataceae",
+          "children": [
+            {
+              "name": "Alisma",
+              "children": [
+                { "name": "Alisma lanceolatum With.", "value": 38, "image":"images/alisma_lanceolatum.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Apiaceae",
+          "children": [
+            {
+              "name": "Oenanthe",
+              "children": [
+                { "name": "Oenanthe aquatica (L.) Poir.", "value": 81, "image":"images/oenanthe_aquatica.jpg" }
+              ]
+            },
+            {
+              "name": "Scandix",
+              "children": [
+                { "name": "Scandix pecten-venerix L.", "value": 21, "image":"images/scandix_pecten_venerix.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Araliaceae",
+          "children": [
+            {
+              "name": "Hydrocotyle",
+              "children": [
+                { "name": "Hydrocotyle vulgaris L.", "value": 17, "image":"images/hydrocotyle_vulgaris.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Asteraceae",
+          "children": [
+            {
+              "name": "Anthemis",
+              "children": [
+                { "name": "Anthemis arvensis L.", "value": 37, "image":"images/anthemis_arvensis.jpg" }
+              ]
+            },
+            {
+              "name": "Bidens",
+              "children": [
+                { "name": "Bidens cernua L.", "value": 40, "image":"images/bidens_cernua.jpeg" },
+                { "name": "Bidens radiata Thuill", "value": 9, "image":"images/bidens_radiata.jpg" }
+              ]
+            },
+            {
+              "name": "Senecio",
+              "children": [
+                { "name": "Senecio ovatus (G.Gaertn., E.Mey, & Scherb.) Willd", "value": 34, "image":"images/senecio_ovatus.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Brassicaceae",
+          "children": [
+            {
+              "name": "Cardamine",
+              "children": [
+                { "name": "Cardamine amaea L.", "value": 32, "image":"images/cardamine_amaea.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Butomaceae",
+          "children": [
+            {
+              "name": "Butomus",
+              "children": [
+                { "name": "Butomus umbellatus L.", "value": 17, "image":"images/butomus_umbellatus.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Campanulaceae",
+          "children": [
+            {
+              "name": "Legousia",
+              "children": [
+                { "name": "Legouisa speculum-veneris (L.) Chaix", "value": 22, "image":"images/legouisa_speculum_veneris.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Caryophyllaceae",
+          "children": [
+            {
+              "name": "Silene",
+              "children": [
+                { "name": "Silene noctiflora L.", "value": 1, "image":"images/silene_noctiflora.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Cyperaceae",
+          "children": [
+            {
+              "name": "Carex",
+              "children": [
+                { "name": "Carex acuta L.", "value": 58, "image":"images/carex_acuta.jpg" },
+                { "name": "Carex distans L", "value": 9, "image":"images/carex_distans.jpg" },
+                { "name": "Carex disticha Huds", "value": 55, "image":"images/carex_disticha.jpg" },
+                { "name": "Carex pseudocyperus L.", "value": 48, "image":"images/carex_pseudocyperus.jpg" }
+              ]
+            },
+            {
+              "name": "Cladium",
+              "children": [
+                { "name": "Cladium mariscus (L.) Pohl", "value": 18, "image":"images/cladium_mariscus.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Equisetaceae",
+          "children": [
+            {
+              "name": "Equisetum",
+              "children": [
+                { "name": "Equisetum telmateia Ehrh.", "value": 54, "image":"images/equisetum_telmateia.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Ericaceae",
+          "children": [
+            {
+              "name": "Vaccinium",
+              "children": [
+                { "name": "Vaccinium myrtillus L.", "value": 48, "image":"images/vaccinium_myrtillus.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Euphorbiaceae",
+          "children": [
+            {
+              "name": "Euphorbia",
+              "children": [
+                { "name": "Euphorbia palustris L.", "value": 11, "image":"images/euphorbia_palustris.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Juncaceae",
+          "children": [
+            {
+              "name": "Juncus",
+              "children": [
+                { "name": "Juncus squarrosus L.", "value": 11, "image":"images/juncus_squarrosus.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Lamiaceae",
+          "children": [
+            {
+              "name": "Stachys",
+              "children": [
+                { "name": "Stachys palustris L.", "value": 203, "image":"images/stachys_palustris.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Menyanthaceae",
+          "children": [
+            {
+              "name": "Menyanthes",
+              "children": [
+                { "name": "Menyanthes trifoliata L.", "value": 22, "image":"images/menyanthes_trifoliata.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Osmundaceae",
+          "children": [
+            {
+              "name": "Osmunda",
+              "children": [
+                { "name": "Osmunda regalis L.", "value": 5, "image":"images/osmunda_regalis.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Papaveraceae",
+          "children": [
+            {
+              "name": "Papaver",
+              "children": [
+                { "name": "Papaver rhoeas L.", "value": 446, "image":"images/papaver_rhoeas.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Poaceae",
+          "children": [
+            {
+              "name": "Alopecurus",
+              "children": [
+                { "name": "Alopecurus aequalis Sobol.", "value": 261, "image":"images/alopecurus_aequalis.jpg" },
+                { "name": "Alopecurus myosuroides Huds", "value": 36, "image":"images/alopecurus_myosuroides.jpg" }
+              ]
+            },
+            {
+              "name": "Apera",
+              "children": [
+                { "name": "Apera spica-venti (L.) P.Beauv", "value": 30, "image":"images/apera_spica_venti.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Ranuncalaceae",
+          "children": [
+            {
+              "name": "Thalictrum",
+              "children": [
+                { "name": "Thalictrum flavum L.", "value": 81, "image":"images/thalictrum_flavum.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Rosaceae",
+          "children": [
+            {
+              "name": "Comarum",
+              "children": [
+                { "name": "Potentilla palustris (L.) Scop.", "value": 18, "image":"images/potentilla_palustris.jpg" }
+              ]
+            },
+            {
+              "name": "Sanguisorba",
+              "children": [
+                { "name": "Sanguisorba officinalis L.", "value": 29, "image":"images/sanguisorba_officinalis.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Thelypteridaceae",
+          "children": [
+            {
+              "name": "Thelypteris",
+              "children": [
+                { "name": "Thelypteris palustris Schott", "value": 13, "image":"images/thelypteris_palustris.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Typhaceae",
+          "children": [
+            {
+              "name": "Typha",
+              "children": [
+                { "name": "Typha angustifolia L.", "value": 26, "image":"images/typha_angustifolia.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Ulmaceae",
+          "children": [
+            {
+              "name": "Ulmus",
+              "children": [
+                { "name": "Ulmus laevis Pall.", "value": 23, "image":"images/ulmus_laevis.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Violaceae",
+          "children": [
+            {
+              "name": "Viola",
+              "children": [
+                { "name": "Viola arvensis Murray", "value": 274, "image":"images/viola_arvensis_murray.jpg" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+	// === Création du tooltip (div HTML flottant) ===
+	const tooltip = d3.select("body")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("position", "absolute")
+  .style("background", "rgba(255, 255, 255, 0.95)")
+  .style("border", "1px solid #ccc")
+  .style("border-radius", "8px")
+  .style("padding", "10px")
+  .style("box-shadow", "0 2px 6px rgba(0,0,0,0.2)")
+  .style("pointer-events", "none")
+  .style("opacity", 0);
+
+
+
+
+
+    // --- Création du graphique ---
+    function chart(data) {
+
+      const width = 1000;
+      const height = 900;
+
+      const color = d3.scaleLinear()
+        .domain([0, 5])
+        .range(["hsl(100, 50%, 80%)", "hsl(125, 40%, 30%)"])
+        .interpolate(d3.interpolateHcl);
+
+      const pack = data => d3.pack()
+          .size([width, height])
+          .padding(3)
+        (d3.hierarchy(data)
+          .sum(d => d.value)
+          .sort((a, b) => b.value - a.value));
+
+      const root = pack(data);
+
+      const svg = d3.create("svg")
+          .attr("viewBox", `-${width / 2} -${height / 2} ${width} ${height}`)
+          .attr("width", width)
+          .attr("height", height)
+          .attr("style", `max-width: 100%; height: auto; display: block; margin: 0 auto;  cursor: pointer;`);
+
+     
+		  
+		const node = svg.append("g")
+      .selectAll("circle")
+      .data(root.descendants().slice(1))
+      .join("circle")
+      .attr("fill", d => d.children ? color(d.depth) : "white")
+      .attr("pointer-events", d => !d.children ? "all" : null)
+      .on("mouseover", function(event, d) {
+         d3.select(this).attr("stroke", "#000");
+
+      // Si c’est un noeud final (pas d’enfants)
+      if (!d.children) {
+        tooltip.transition().duration(200).style("opacity", 1);
+
+        tooltip.html(`
+          <div style="text-align:center;">
+            <strong>${d.data.name}</strong><br>
+            <h2><small>Observation: ${d.data.value}</small></h2>
+            <img src="${d.data.image}"
+                 alt="${d.data.name}" width="100" style="margin-top:5px;border-radius:6px;">
+            <p style="font-size:12px;margin-top:5px;">${d.data.description || 'Aucune description'}</p>
+          </div>
+        `)
+        .style("left", (event.pageX + 15) + "px")
+        .style("top", (event.pageY - 28) + "px");
+      }
+    })
+    .on("mousemove", function(event) {
+      // Déplacement fluide du tooltip
+      tooltip.style("left", (event.pageX + 15) + "px")
+             .style("top", (event.pageY - 28) + "px");
+    })
+    .on("mouseout", function(event, d) {
+      d3.select(this).attr("stroke", null);
+      tooltip.transition().duration(300).style("opacity", 0);
+    })
+    .on("click", (event, d) => focus !== d && (zoom(event, d), event.stopPropagation()));
+
+      const label = svg.append("g")
+          .style("font", "20px sans-serif", "seagreen")
+          .attr("pointer-events", "none")
+          .attr("text-anchor", "middle")
+          .selectAll("text")
+          .data(root.descendants())
+          .join("text")
+          .style("fill-opacity", d => d.parent === root ? 1 : 0)
+          .style("display", d => d.parent === root ? "inline" : "none")
+          .text(d => d.data.name)
+	
+
+      svg.on("click", (event) => zoom(event, root));
+
+      let focus = root;
+      let view;
+
+      zoomTo([focus.x, focus.y, focus.r * 2]);
+
+      function zoomTo(v) {
+        const k = width / v[2];
+        view = v;
+        label.attr("transform", d => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`);
+        node.attr("transform", d => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`);
+        node.attr("r", d => d.r * k);
+      }
+
+      function zoom(event, d) {
+        focus = d;
+        const transition = svg.transition()
+            .duration(event.altKey ? 7500 : 750)
+            .tween("zoom", d => {
+              const i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2]);
+              return t => zoomTo(i(t));
+            });
+
+        label
+          .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+          .transition(transition)
+            .style("fill-opacity", d => d.parent === focus ? 1 : 0)
+            .on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+            .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+      }
+
+      return svg.node();
+    }
+	
+	// === Afficher le graphique dans la page ===
+		document.getElementById("container").appendChild(chart(data));
+	
+
+
+
+  </script>
+  
+</head>
+<body>
+  <h1>🌍 La Biodiversité dans le Grand-Est</h1>
+  <h2>🦋 Les différentes espèces observables</h2>
+  <p>Cliquez sur les ronds pour voir les différentes familles et les espèces les composants</p>
+  <div id="container"></div>
+<h2>🐦Évolution des oiseaux (par mois)</h2>
+<p>Choisisez l'espèce d'oiseaux donc vous souhaitez observer l'évolution et appuyer sur Lecture pour lancer l'animation </p>
+
+<div id="controls">
+  <label>Espèce :</label>
+  <select id="speciesSelect"></select>
+  <button id="playPause">⏸ Pause</button>
+  <input id="timeSlider" type="range" min="0" value="0">
+  <span id="dateLabel"></span>
+</div>
+
+<div id="mapContainer"></div>
+
+<script type="module">
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+// Dimensions SVG
+const width = 1000, height = 600;
+
+// Charger GeoJSON et CSV
+const geoData = await d3.json("departements-grand-est.geojson");
+const donneeRaw = await d3.csv("01_oiseaux.csv");
+
+// Conversion des dates au format Date
+const parseDate = d3.timeParse("%d/%m/%Y");
+const donnee = donneeRaw.map(d => ({
+  ...d,
+  date: parseDate(d.date),
+  long: +d.long,
+  lat: +d.lat
+}));
+
+// 🧭 Création d'une date "mensuelle" = premier jour du mois
+donnee.forEach(d => {
+  d.month = new Date(d.date.getFullYear(), d.date.getMonth(), 1);
+});
+
+// SVG et projection
+const svg = d3.select("#mapContainer")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height);
+
+const projection = d3.geoMercator().fitSize([width, height], geoData);
+const path = d3.geoPath().projection(projection);
+
+// Dessin de la région
+svg.append("g")
+  .selectAll("path")
+  .data(geoData.features)
+  .join("path")
+  .attr("fill", "#ddd")
+  .attr("stroke", "#444")
+  .attr("stroke-width", 1)
+  .attr("d", path);
+
+// Préparation des contrôles
+const speciesList = Array.from(new Set(donnee.map(d => d.espece))).sort();
+
+// 🗓️ Dictionnaire espece -> mois uniques triés
+const speciesMonths = {};
+speciesList.forEach(spec => {
+  speciesMonths[spec] = Array.from(
+    new Set(donnee.filter(d => d.espece === spec).map(d => d.month.getTime()))
+  )
+  .sort((a,b) => a-b)
+  .map(t => new Date(t));
+});
+
+d3.select("#speciesSelect")
+  .selectAll("option")
+  .data(speciesList)
+  .join("option")
+  .text(d => d);
+
+const slider = d3.select("#timeSlider");
+const dateLabel = d3.select("#dateLabel");
+const button = d3.select("#playPause");
+button.text("▶ Lecture"); // au démarrage, le bouton affiche "Lecture"
+
+
+// Groupe pour les points
+const g = svg.append("g").attr("fill", "seagreen");
+const dots = g.selectAll("circle")
+  .data(donnee)
+  .join("circle")
+  .attr("cx", d => projection([d.long, d.lat])[0])
+  .attr("cy", d => projection([d.long, d.lat])[1])
+  .attr("r", 0)
+  .attr("opacity", 0);
+
+let currentSpecies = speciesList[0];
+let currentMonthIndex = 0;
+let isPlaying = false;
+let timer;
+
+// Fonction de mise à jour
+function updateMap(espece, currentMonth) {
+  dateLabel.text(d3.timeFormat("%B %Y")(currentMonth)); // format : "janvier 2015"
+
+  dots.transition().duration(200)
+    .attr("r", d => (d.espece === espece && d.month <= currentMonth) ? 4 : 0)
+    .attr("opacity", d => {
+      if (d.espece !== espece) return 0;
+      const monthsAgo = (currentMonth - d.month) / (1000*60*60*24*30);
+      return monthsAgo < 6 ? 0.8 : 0.3; // plus récent = plus visible
+    })
+    .attr("fill", d => d.espece === espece ? "#2E8B57" : "none");
+}
+
+// Animation automatique (par mois)
+function startAnimation(espece) {
+  currentSpecies = espece;
+  currentMonthIndex = 0;
+  clearInterval(timer);
+
+  const months = speciesMonths[espece];
+  slider.attr("max", months.length - 1);
+  updateMap(espece, months[currentMonthIndex]);
+
+  // ⚠️ Démarre le timer seulement si isPlaying = true
+  if (isPlaying) {
+    timer = setInterval(() => {
+      if (!isPlaying) return;
+      currentMonthIndex++;
+      if (currentMonthIndex >= months.length) currentMonthIndex = 0;
+      slider.property("value", currentMonthIndex);
+      updateMap(espece, months[currentMonthIndex]);
+    }, 50);
+  }
+}
+
+// Interactions
+d3.select("#speciesSelect").on("change", e => startAnimation(e.target.value));
+slider.on("input", e => {
+  currentMonthIndex = +e.target.value;
+  const months = speciesMonths[currentSpecies];
+  updateMap(currentSpecies, months[currentMonthIndex]);
+});
+button.on("click", () => {
+  isPlaying = !isPlaying;
+  button.text(isPlaying ? "⏸ Pause" : "▶ Lecture");
+  if(isPlaying) startAnimation(currentSpecies);
+});
+
+// Démarrage initial
+startAnimation(speciesList[0]);
+</script>
+</body>
+</html>
